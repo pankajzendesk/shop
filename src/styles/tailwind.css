@@ -1,0 +1,270 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Primary Colors */
+    --color-primary: #0d7377; /* teal-700 */
+    --color-primary-foreground: #ffffff; /* white */
+
+    /* Secondary Colors */
+    --color-secondary: #14a085; /* teal-500 */
+    --color-secondary-foreground: #ffffff; /* white */
+
+    /* Accent Colors */
+    --color-accent: #ff6b35; /* orange-500 */
+    --color-accent-foreground: #ffffff; /* white */
+
+    /* Background Colors */
+    --color-background: #fafbfc; /* gray-50 */
+    --color-foreground: #1a202c; /* gray-900 */
+
+    /* Surface Colors */
+    --color-card: #ffffff; /* white */
+    --color-card-foreground: #2d3748; /* gray-700 */
+
+    /* Popover Colors */
+    --color-popover: #ffffff; /* white */
+    --color-popover-foreground: #2d3748; /* gray-700 */
+
+    /* Muted Colors */
+    --color-muted: #f7fafc; /* gray-100 */
+    --color-muted-foreground: #4a5568; /* gray-600 */
+
+    /* Destructive Colors */
+    --color-destructive: #e53e3e; /* red-600 */
+    --color-destructive-foreground: #ffffff; /* white */
+
+    /* Success Colors */
+    --color-success: #38a169; /* green-600 */
+    --color-success-foreground: #ffffff; /* white */
+
+    /* Warning Colors */
+    --color-warning: #d69e2e; /* yellow-600 */
+    --color-warning-foreground: #1a202c; /* gray-900 */
+
+    /* Error Colors */
+    --color-error: #e53e3e; /* red-600 */
+    --color-error-foreground: #ffffff; /* white */
+
+    /* Border & Input Colors */
+    --color-border: #e2e8f0; /* gray-300 */
+    --color-input: #e2e8f0; /* gray-300 */
+    --color-ring: #0d7377; /* teal-700 */
+
+    /* Border Radius */
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+
+    /* Shadows */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.12);
+    --shadow-xl: 0 20px 40px -8px rgba(0, 0, 0, 0.16);
+  }
+
+  .dark {
+    /* Primary Colors */
+    --color-primary: #14a085; /* teal-500 */
+    --color-primary-foreground: #ffffff; /* white */
+
+    /* Secondary Colors */
+    --color-secondary: #0d7377; /* teal-700 */
+    --color-secondary-foreground: #ffffff; /* white */
+
+    /* Accent Colors */
+    --color-accent: #ff8a5b; /* orange-400 */
+    --color-accent-foreground: #ffffff; /* white */
+
+    /* Background Colors */
+    --color-background: #0f1419; /* gray-950 */
+    --color-foreground: #f7fafc; /* gray-100 */
+
+    /* Surface Colors */
+    --color-card: #1a202c; /* gray-900 */
+    --color-card-foreground: #e2e8f0; /* gray-300 */
+
+    /* Popover Colors */
+    --color-popover: #1a202c; /* gray-900 */
+    --color-popover-foreground: #e2e8f0; /* gray-300 */
+
+    /* Muted Colors */
+    --color-muted: #2d3748; /* gray-800 */
+    --color-muted-foreground: #a0aec0; /* gray-400 */
+
+    /* Destructive Colors */
+    --color-destructive: #fc8181; /* red-400 */
+    --color-destructive-foreground: #1a202c; /* gray-900 */
+
+    /* Success Colors */
+    --color-success: #68d391; /* green-400 */
+    --color-success-foreground: #1a202c; /* gray-900 */
+
+    /* Warning Colors */
+    --color-warning: #f6e05e; /* yellow-400 */
+    --color-warning-foreground: #1a202c; /* gray-900 */
+
+    /* Error Colors */
+    --color-error: #fc8181; /* red-400 */
+    --color-error-foreground: #1a202c; /* gray-900 */
+
+    /* Border & Input Colors */
+    --color-border: #2d3748; /* gray-800 */
+    --color-input: #2d3748; /* gray-800 */
+    --color-ring: #14a085; /* teal-500 */
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family:
+      'Inter',
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family:
+      'Outfit',
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      sans-serif;
+  }
+
+  h1 {
+    @apply text-4xl font-semibold leading-tight;
+  }
+
+  h2 {
+    @apply text-3xl font-semibold leading-snug;
+  }
+
+  h3 {
+    @apply text-2xl font-medium leading-snug;
+  }
+
+  h4 {
+    @apply text-xl font-medium leading-normal;
+  }
+
+  h5 {
+    @apply text-lg font-medium leading-normal;
+  }
+
+  caption,
+  .caption {
+    font-family:
+      'Source Sans 3',
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      sans-serif;
+    @apply text-sm leading-relaxed;
+    letter-spacing: 0.025em;
+  }
+
+  .font-mono,
+  code,
+  pre {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-feature-settings: 'tnum' 1;
+  }
+
+  @media (max-width: 640px) {
+    body {
+      font-size: 15px;
+    }
+  }
+}
+
+@layer utilities {
+  @keyframes progress-fast {
+    from { width: 0%; }
+    to { width: 100%; }
+  }
+  .animate-progress-fast {
+    animation: progress-fast 3s linear forwards;
+  }
+
+  @keyframes bounce-slow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
+  .animate-bounce-slow {
+    animation: bounce-slow 3s ease-in-out infinite;
+  }
+}
+
+@layer utilities {
+  .transition-smooth {
+    transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .transition-spring {
+    transition: all 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .shadow-warm-sm {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  }
+
+  .shadow-warm-md {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .shadow-warm-lg {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+  }
+
+  .shadow-warm-xl {
+    box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.16);
+  }
+  .focus-ring {
+    @apply outline-none ring-accent ring-offset-background;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-track {
+    @apply bg-muted rounded-full;
+  }
+  .scrollbar-custom::-webkit-scrollbar-thumb {
+    @apply rounded-full;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}

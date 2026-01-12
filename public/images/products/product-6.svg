@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#f8fafc"/>
+  <path d="M150 230 L200 100 L250 230 Z" fill="#a855f7" opacity="0.8"/>
+  <path d="M100 230 L150 150 L200 230 Z" fill="#d946ef" opacity="0.6"/>
+  <path d="M200 230 L250 120 L300 230 Z" fill="#8b5cf6" opacity="0.7"/>
+  <rect x="80" y="230" width="240" height="20" rx="5" fill="#e2e8f0"/>
+  <text x="200" y="50" font-family="Arial" font-weight="bold" font-size="24" fill="#1e293b" text-anchor="middle">Science Kit</text>
+</svg>
