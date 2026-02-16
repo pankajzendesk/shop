@@ -8,10 +8,11 @@ import { recordTraffic } from '@/app/actions';
 export default function TrafficTracker() {
   const { user, isAuthenticated, isInitialized } = useAuth();
   const pathname = usePathname();
+  const isTrackingEnabled = process.env.NEXT_PUBLIC_ENABLE_TRAFFIC_TRACKING !== 'false';
 
   useEffect(() => {
     const trackVisit = async () => {
-      if (!isInitialized) return;
+      if (!isTrackingEnabled || !isInitialized) return;
 
       try {
         // Skip tracking admin pages to avoid noise
@@ -71,7 +72,7 @@ export default function TrafficTracker() {
     };
 
     trackVisit();
-  }, [pathname, isAuthenticated, user, isInitialized]);
+  }, [pathname, isAuthenticated, user, isInitialized, isTrackingEnabled]);
 
   return null;
 }

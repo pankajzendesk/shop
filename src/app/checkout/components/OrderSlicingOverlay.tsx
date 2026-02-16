@@ -78,7 +78,9 @@ export default function OrderSlicingOverlay({ isVisible, totalItems, onComplete 
                   transitionDelay: `${i * 100}ms`
                 }}
               >
-                <div className="text-xs font-bold mb-1">SLICE #{i + 1}</div>
+                <div className="text-xs font-bold mb-1">
+                  {i === 0 ? 'GET' : i === 1 ? 'SET' : i === 2 ? 'GO' : `SLICE #${i + 1}`}
+                </div>
                 {i < sliceCount ? (
                   <Icon name="CheckCircleIcon" size={24} className="animate-bounce-subtle" />
                 ) : (

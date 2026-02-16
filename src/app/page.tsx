@@ -8,7 +8,7 @@ import AppImage from '@/components/ui/AppImage';
 import Link from 'next/link';
 import prisma from '@/lib/prisma';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 interface ExperienceTile {
   id: string;
@@ -20,17 +20,41 @@ interface ExperienceTile {
 // Force update to resolve schema inconsistency
 async function getStoreFrontData() {
   try {
-    const [products, banners, deals, coupons, categories, experiences, trendingData] = await Promise.all([
-      prisma.product.findMany({
+    const [banners, deals, coupons, categories, experiences, trendingData] = await Promise.all([
+      prisma.banner.findMany({
+        where: { active: true },
+        select: { id: true, title: true, subtitle: true, image: true },
         take: 6,
         orderBy: { createdAt: 'desc' }
       }),
-      prisma.banner.findMany({ where: { active: true } }),
-      prisma.deal.findMany({ where: { active: true } }),
-      prisma.coupon.findMany({ where: { status: 'Active' } }),
-      prisma.navCategory.findMany({ orderBy: { displayOrder: 'asc' } }),
-      prisma.experienceTile.findMany(),
-      prisma.trendingProduct.findMany({ include: { product: true } }),
+      prisma.deal.findMany({
+        where: { active: true },
+        select: { id: true, name: true, image: true, offer: true },
+        take: 12,
+        orderBy: { createdAt: 'desc' }
+      }),
+      prisma.coupon.findMany({
+        where: { status: 'Active' },
+        select: { id: true, code: true, discount: true, type: true, expiry: true, usageCount: true, status: true, bgImg: true },
+        take: 6,
+        orderBy: { createdAt: 'desc' }
+      }),
+      prisma.navCategory.findMany({
+        select: { id: true, name: true, img: true, href: true },
+        orderBy: { displayOrder: 'asc' }
+      }),
+      prisma.experienceTile.findMany({
+        select: { id: true, name: true, image: true, color: true },
+        take: 10,
+        orderBy: { name: 'asc' }
+      }),
+      prisma.trendingProduct.findMany({
+        select: {
+          tag: true,
+          product: { select: { id: true, name: true, image: true, price: true } }
+        },
+        take: 6
+      }),
     ]);
 
     const trending = trendingData.map((t: any) => ({
@@ -39,7 +63,6 @@ async function getStoreFrontData() {
     }));
 
     return {
-      products,
       banners,
       deals,
       coupons,
@@ -50,7 +73,6 @@ async function getStoreFrontData() {
   } catch (error) {
     console.error('Failed to fetch landing data:', error);
     return {
-      products: [],
       banners: [],
       deals: [],
       coupons: [],
@@ -196,10 +218,13 @@ export default async function HomePage() {
                 <p className="mb-8 text-base sm:text-lg opacity-90 font-medium">Join 50,000+ happy customers and get early access to our latest gadget drops.</p>
                 <div className="mx-auto flex flex-col sm:flex-row max-w-md gap-3" suppressHydrationWarning>
                    <input 
-                      type="email" 
-                      placeholder="Enter your email" 
-                      suppressHydrationWarning
-                      className="flex-1 rounded-xl border-0 bg-white/20 px-6 py-4 font-medium text-white placeholder:text-white/60 focus:ring-2 focus:ring-white/50 w-full"
+                     type="email" 
+                     placeholder="Enter your email" 
+                     autoComplete="off"
+                     data-lpignore="true"
+                     data-1p-ignore="true"
+                     suppressHydrationWarning
+                     className="flex-1 rounded-xl border-0 bg-white/20 px-6 py-4 font-medium text-white placeholder:text-white/60 focus:ring-2 focus:ring-white/50 w-full"
                    />
                    <button className="rounded-xl bg-white px-8 py-4 font-bold text-primary transition-smooth hover:bg-opacity-90 w-full sm:w-auto whitespace-nowrap">
                       Join Now
