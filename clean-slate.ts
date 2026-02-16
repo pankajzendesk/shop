@@ -180,7 +180,7 @@ async function main() {
          data: {
            name: 'System Admin',
            email: 'admin@seller.sh',
-           password: 'adminPassword123',
+           password: 'adminPassword123', #admin123
            role: 'admin'
          }
        });
