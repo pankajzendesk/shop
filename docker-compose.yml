@@ -1,6 +1,23 @@
 name: toy-shop
 
 services:
+  app:
+    build: .
+    image: gadgettoyshop:latest
+    container_name: toy-shop-app
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      NEXT_PUBLIC_ENABLE_DEV_TOOLS: "false"
+      NEXT_PUBLIC_ENABLE_TRAFFIC_TRACKING: "false"
+      DATABASE_URL: "postgresql://admin:admin123@postgres:5432/shop_data?schema=public"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+
   postgres:
     image: postgres:18
     container_name: toy-shop-postgres
