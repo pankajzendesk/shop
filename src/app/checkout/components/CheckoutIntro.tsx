@@ -105,8 +105,15 @@ export default function CheckoutIntro() {
 
     const delivery = deliveryMethods.find((m) => m.id === selectedDeliveryMethod);
     let shipCost = delivery?.cost || 0;
-    if (appliedCoupon?.code === 'FREESHIP' || sub > 500) {
+
+    // Free shipping conditions
+    if (appliedCoupon?.code === 'FREESHIP') {
       shipCost = 0;
+    } else if (sub >= 1000) {
+      // Only standard shipping is free above ₹1000
+      if (selectedDeliveryMethod === 'standard') {
+        shipCost = 0;
+      }
     }
     
     // Calculate tax based on store settings

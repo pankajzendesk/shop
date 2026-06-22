@@ -181,8 +181,9 @@ const ShoppingCartInteractive = () => {
 
   const calculateShipping = () => {
     const subtotal = calculateSubtotal();
-    if (appliedCoupon?.code === 'FREESHIP' || subtotal > 500) return 0;
-    return 40;
+    // Free shipping with coupon or if subtotal >= ₹1000
+    if (appliedCoupon?.code === 'FREESHIP' || subtotal >= 1000) return 0;
+    return 40; // Standard shipping cost
   };
 
   const calculateTotal = () => {
