@@ -89,8 +89,8 @@ export default function AdminSettingsPage() {
       </div>
 
       <div className="grid gap-6">
-        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-          <div className="mb-6 flex items-center gap-3">
+        <div className="rounded-2xl border-2 border-border bg-card p-6 shadow-md">
+          <div className="mb-6 flex items-center gap-3 rounded-xl bg-primary/5 p-4 border border-primary/20">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
               <Icon name="ReceiptPercentIcon" size={24} />
             </div>
@@ -158,9 +158,9 @@ export default function AdminSettingsPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-          <div className="mb-6 flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+        <div className="rounded-2xl border-2 border-border bg-card p-6 shadow-md">
+          <div className="mb-6 flex items-center gap-3 rounded-xl bg-indigo-50 p-4 border border-indigo-200">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
               <Icon name="CameraIcon" size={24} />
             </div>
             <div>

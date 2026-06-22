@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Icon from '@/components/ui/AppIcon';
 import AppImage from '@/components/ui/AppImage';
 import Notification from '@/components/ui/Notification';
-import { createOrder, getProductStock, cancelOrder } from '@/app/actions';
+import { createOrder, getProductStock, cancelOrder, getStoreSettings } from '@/app/actions';
 import { useAuth } from '@/app/providers/AuthProvider';
 
 interface Product {
@@ -37,9 +37,15 @@ export function ShopkeeperDashboardClient({ initialProducts, stats }: { readonly
   const [lastOrder, setLastOrder] = useState<any>(null);
   const [paymentMethod, setPaymentMethod] = useState('Cash');
   const [isMounted, setIsMounted] = useState(false);
+  const [storeSettings, setStoreSettings] = useState({ taxEnabled: false, taxPercentage: 0, taxName: 'Tax' });
 
   useEffect(() => {
     setIsMounted(true);
+
+    // Fetch store settings
+    getStoreSettings().then(settings => {
+      setStoreSettings(settings);
+    });
   }, []);
 
   const categories = useMemo(() => {
@@ -55,7 +61,7 @@ export function ShopkeeperDashboardClient({ initialProducts, stats }: { readonly
   });
 
   const subtotal = cart.reduce((sum, item) => sum + (item.customPrice || item.price) * item.saleQuantity, 0);
-  const tax = subtotal * 0.18; // GST 18%
+  const tax = storeSettings.taxEnabled ? (subtotal * storeSettings.taxPercentage / 100) : 0;
   const total = subtotal + tax;
 
   if (isMounted && authInitialized && (!isAuthenticated || (user?.role !== 'shopkeeper' && user?.role !== 'admin'))) {
@@ -225,31 +231,33 @@ export function ShopkeeperDashboardClient({ initialProducts, stats }: { readonly
         />
       </div>
 
-      <POSCartSidebar 
-        isCartOpen={isCartOpen} 
-        setIsCartOpen={setIsCartOpen} 
-        cart={cart} 
-        setCart={setCart} 
-        updateQuantity={updateQuantity} 
-        removeFromCart={removeFromCart} 
-        customer={customer} 
-        setCustomer={setCustomer} 
-        paymentMethod={paymentMethod} 
-        setPaymentMethod={setPaymentMethod} 
-        subtotal={subtotal} 
-        tax={tax} 
-        total={total} 
-        handleCheckout={handleCheckout} 
-        isProcessing={isProcessing} 
+      <POSCartSidebar
+        isCartOpen={isCartOpen}
+        setIsCartOpen={setIsCartOpen}
+        cart={cart}
+        setCart={setCart}
+        updateQuantity={updateQuantity}
+        removeFromCart={removeFromCart}
+        customer={customer}
+        setCustomer={setCustomer}
+        paymentMethod={paymentMethod}
+        setPaymentMethod={setPaymentMethod}
+        subtotal={subtotal}
+        tax={tax}
+        total={total}
+        handleCheckout={handleCheckout}
+        isProcessing={isProcessing}
+        storeSettings={storeSettings}
       />
 
       {showReceipt && lastOrder && (
-        <POSReceiptOverlay 
-          lastOrder={lastOrder} 
-          isMounted={isMounted} 
-          handleBackToEdit={handleBackToEdit} 
-          handlePrint={handlePrint} 
-          finalizeTransaction={finalizeTransaction} 
+        <POSReceiptOverlay
+          lastOrder={lastOrder}
+          isMounted={isMounted}
+          handleBackToEdit={handleBackToEdit}
+          handlePrint={handlePrint}
+          finalizeTransaction={finalizeTransaction}
+          storeSettings={storeSettings}
         />
       )}
     </div>
@@ -417,10 +425,10 @@ function POSProductGrid({ filteredProducts, addToCart, setSearch, setSelectedCat
   );
 }
 
-function POSCartSidebar({ 
-  isCartOpen, setIsCartOpen, cart, setCart, updateQuantity, removeFromCart, 
-  customer, setCustomer, paymentMethod, setPaymentMethod, 
-  subtotal, tax, total, handleCheckout, isProcessing 
+function POSCartSidebar({
+  isCartOpen, setIsCartOpen, cart, setCart, updateQuantity, removeFromCart,
+  customer, setCustomer, paymentMethod, setPaymentMethod,
+  subtotal, tax, total, handleCheckout, isProcessing, storeSettings 
 }: any) {
   return (
     <aside className={`fixed inset-y-0 right-0 z-50 w-full max-w-lg bg-white border-l border-zinc-200 flex flex-col shrink-0 transition-transform duration-300 lg:static lg:translate-x-0 lg:w-[450px] print:hidden ${isCartOpen ? 'translate-x-0' : 'translate-x-full'}`}>
@@ -536,10 +544,12 @@ function POSCartSidebar({
                 <span>Subtotal</span>
                 <span>₹{subtotal.toLocaleString('en-IN')}</span>
              </div>
-             <div className="flex justify-between items-center text-zinc-500 font-bold text-sm">
-                <span>Tax (GST 18%)</span>
-                <span>₹{tax.toLocaleString('en-IN')}</span>
-             </div>
+             {storeSettings.taxEnabled && (
+               <div className="flex justify-between items-center text-zinc-500 font-bold text-sm">
+                  <span>{storeSettings.taxName} ({storeSettings.taxPercentage}%)</span>
+                  <span>₹{tax.toLocaleString('en-IN')}</span>
+               </div>
+             )}
              <div className="flex justify-between items-center text-zinc-900 font-black text-2xl pt-2">
                 <span>Payable</span>
                 <span className="text-primary">₹{total.toLocaleString('en-IN')}</span>
@@ -558,7 +568,7 @@ function POSCartSidebar({
   );
 }
 
-function POSReceiptOverlay({ lastOrder, isMounted, handleBackToEdit, handlePrint, finalizeTransaction }: any) {
+function POSReceiptOverlay({ lastOrder, isMounted, handleBackToEdit, handlePrint, finalizeTransaction, storeSettings }: any) {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-900/80 backdrop-blur-md p-4 print:p-0 print:bg-white print:relative print:z-0">
       <div className="w-full max-w-sm bg-white p-10 rounded-[3rem] shadow-2xl overflow-hidden print:shadow-none print:rounded-none relative">
@@ -601,10 +611,12 @@ function POSReceiptOverlay({ lastOrder, isMounted, handleBackToEdit, handlePrint
                   <span>Amount</span>
                   <span>₹{(lastOrder.total - lastOrder.taxAmount).toLocaleString('en-IN')}</span>
                </div>
-               <div className="flex justify-between text-[10px] font-bold text-zinc-500">
-                  <span>GST (18%)</span>
-                  <span>₹{lastOrder.taxAmount.toLocaleString('en-IN')}</span>
-               </div>
+               {storeSettings.taxEnabled && lastOrder.taxAmount > 0 && (
+                 <div className="flex justify-between text-[10px] font-bold text-zinc-500">
+                    <span>{storeSettings.taxName} ({storeSettings.taxPercentage}%)</span>
+                    <span>₹{lastOrder.taxAmount.toLocaleString('en-IN')}</span>
+                 </div>
+               )}
                <div className="flex justify-between text-2xl font-black text-zinc-900 pt-4 border-t border-zinc-50">
                   <span>Total</span>
                   <span>₹{lastOrder.total.toLocaleString('en-IN')}</span>

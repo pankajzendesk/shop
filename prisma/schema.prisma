@@ -27,6 +27,10 @@ model User {
   posSales           Order[]       @relation("StaffPOS")
   orders             Order[]
   transactions       Transaction[]
+
+  @@index([role])
+  @@index([isActive])
+  @@index([createdAt])
 }
 
 model Address {
@@ -42,6 +46,9 @@ model Address {
   isDefault    Boolean @default(false)
   userId       String
   user         User    @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([isDefault])
 }
 
 model Product {
@@ -67,6 +74,12 @@ model Product {
   updatedAt     DateTime          @updatedAt
   returnPolicy  String            @default("NONE")
   trendingItems TrendingProduct[]
+
+  @@index([category])
+  @@index([brand])
+  @@index([inStock])
+  @@index([createdAt])
+  @@index([price])
 }
 
 model Order {
@@ -113,6 +126,14 @@ model Order {
   statusHistory       OrderHistory[]
   items               OrderItem[]
   transaction         Transaction?
+
+  @@index([userId])
+  @@index([status])
+  @@index([date])
+  @@index([createdAt])
+  @@index([email])
+  @@index([source])
+  @@index([assignedDeliveryId])
 }
 
 model OrderHistory {
@@ -140,6 +161,10 @@ model Transaction {
   updatedAt      DateTime @updatedAt
   order          Order    @relation(fields: [orderId], references: [id])
   user           User?    @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
 }
 
 model Carrier {
@@ -218,6 +243,10 @@ model TrafficRecord {
   device    String?
   userAgent String?
   userEmail String?
+
+  @@index([timestamp])
+  @@index([userId])
+  @@index([path])
 }
 
 model PaymentMethod {

@@ -111,9 +111,9 @@ export default function CheckoutIntro() {
     
     // Calculate tax based on store settings
     const taxableAmount = Math.max(0, sub - disc);
-    const taxCost = storeSettings.taxEnabled 
-      ? (taxableAmount * storeSettings.taxPercentage / 100) 
-      : (taxableAmount * 0.18);
+    const taxCost = storeSettings.taxEnabled
+      ? (taxableAmount * storeSettings.taxPercentage / 100)
+      : 0;
 
     return {
       subtotal: sub,
