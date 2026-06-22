@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import Notification from '@/components/ui/Notification';
+import { useAuth } from './AuthProvider';
 import {
   addItem,
   applyCouponLocal,
@@ -33,6 +34,7 @@ type CartContextValue = {
 const CartContext = createContext<CartContextValue | null>(null);
 
 export function CartProvider({ children }: Readonly<{ children: React.ReactNode }>) {
+  const { isAuthenticated } = useAuth();
   const [state, setState] = useState<CartState>(emptyCartState());
   const [isHydrated, setIsHydrated] = useState(false);
   const [notification, setNotification] = useState<{ isVisible: boolean; message: string }>({
@@ -41,9 +43,14 @@ export function CartProvider({ children }: Readonly<{ children: React.ReactNode 
   });
 
   useEffect(() => {
-    setState(loadCartFromStorage());
+    // Only load cart if user is authenticated
+    if (isAuthenticated) {
+      setState(loadCartFromStorage());
+    } else {
+      setState(emptyCartState());
+    }
     setIsHydrated(true);
-  }, []);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (!isHydrated) return;
