@@ -81,11 +81,176 @@ npm run clean
 
 ---
 
-## 🐳 Docker Deployment Options
+## 🚀 Running the Application - Choose Your Setup
 
-### Option 1: Full Stack (App + Database) - Default Setup
+### ✅ Option 1: App in Docker + Database on Local Machine
 
-Run both application and PostgreSQL database together:
+**Best for:** Production-like environment with local database
+
+**Prerequisites:**
+- Docker installed
+- PostgreSQL installed locally on your machine
+
+**Step 1:** Setup Local PostgreSQL
+
+```bash
+# Install PostgreSQL (if not already installed)
+# Mac
+brew install postgresql
+brew services start postgresql
+
+# Linux
+sudo apt install postgresql postgresql-contrib
+sudo systemctl start postgresql
+
+# Windows - Download from postgresql.org
+```
+
+**Step 2:** Create Database
+
+```bash
+# Connect to PostgreSQL
+psql -U postgres
+
+# Create database
+CREATE DATABASE shop_data;
+
+# Exit
+\q
+```
+
+**Step 3:** Configure PostgreSQL to Accept Docker Connections
+
+Edit `postgresql.conf`:
+```conf
+listen_addresses = '*'
+```
+
+Edit `pg_hba.conf` (add this line):
+```conf
+host    all    all    0.0.0.0/0    md5
+```
+
+Restart PostgreSQL:
+```bash
+# Mac
+brew services restart postgresql
+
+# Linux
+sudo systemctl restart postgresql
+
+# Windows - Restart via Services app
+```
+
+**Step 4:** Build and Run App in Docker
+
+**For Mac/Windows:**
+```bash
+# Build Docker image
+docker build -t gadgettoyshop:latest .
+
+# Run container
+docker run -d \
+  --name toy-shop-app \
+  -p 3000:3000 \
+  -e DATABASE_URL="postgresql://postgres:your_password@host.docker.internal:5432/shop_data" \
+  gadgettoyshop:latest
+
+# View logs
+docker logs -f toy-shop-app
+```
+
+**For Linux:**
+```bash
+# Build Docker image
+docker build -t gadgettoyshop:latest .
+
+# Run container
+docker run -d \
+  --name toy-shop-app \
+  -p 3000:3000 \
+  -e DATABASE_URL="postgresql://postgres:your_password@172.17.0.1:5432/shop_data" \
+  gadgettoyshop:latest
+
+# View logs
+docker logs -f toy-shop-app
+```
+
+**Access:** http://localhost:3000
+
+**Stop app:**
+```bash
+docker stop toy-shop-app
+docker rm toy-shop-app
+```
+
+---
+
+### ✅ Option 2: App Running Locally + Database on Local Machine
+
+**Best for:** Development and debugging
+
+**Prerequisites:**
+- Node.js 26+ installed
+- PostgreSQL installed locally
+
+**Step 1:** Setup Local PostgreSQL (same as Option 1 Step 1 & 2)
+
+```bash
+# Install PostgreSQL if needed
+brew install postgresql  # Mac
+sudo apt install postgresql  # Linux
+
+# Start PostgreSQL
+brew services start postgresql  # Mac
+sudo systemctl start postgresql  # Linux
+
+# Create database
+psql -U postgres
+CREATE DATABASE shop_data;
+\q
+```
+
+**Step 2:** Install Dependencies
+
+```bash
+cd /path/to/shop
+npm install
+```
+
+**Step 3:** Configure Environment
+
+Create `.env` file in project root:
+```env
+DATABASE_URL="postgresql://postgres:your_password@localhost:5432/shop_data"
+```
+
+**Step 4:** Setup Database
+
+```bash
+# Run migrations
+npx prisma migrate deploy
+
+# Generate Prisma client
+npx prisma generate
+
+# Seed database (clean slate)
+npx tsx clean-slate.ts
+```
+
+**Step 5:** Start Development Server
+
+```bash
+npm run dev
+```
+
+**Access:** http://localhost:3000
+
+---
+
+### 🐳 Option 3: Full Stack with Docker Compose (App + Database Both in Docker)
+
+**Best for:** Quick testing, no local PostgreSQL needed
 
 ```bash
 # Start everything
@@ -102,69 +267,12 @@ docker compose down
 
 ---
 
-### Option 2: App-Only Container with External Database
+### Option 4: App-Only Container with Cloud Database
 
-If you want to use an external or local PostgreSQL database:
+If you want to use cloud PostgreSQL (AWS RDS, Supabase, DigitalOcean, Neon):
 
-#### 2A: Connect to Local PostgreSQL (on your machine)
+**Step 1:** Build and run app container
 
-**Step 1:** Configure local PostgreSQL to accept connections
-
-Edit `postgresql.conf`:
-```conf
-listen_addresses = '*'
-```
-
-Edit `pg_hba.conf` (add this line):
-```conf
-host    all    all    0.0.0.0/0    md5
-```
-
-Restart PostgreSQL:
-```bash
-# Mac (Homebrew)
-brew services restart postgresql
-
-# Linux
-sudo systemctl restart postgresql
-```
-
-**Step 2:** Create database
-```bash
-psql -U postgres
-CREATE DATABASE shop_data;
-\q
-```
-
-**Step 3:** Build and run app container
-
-**For Mac/Windows:**
-```bash
-docker build -t gadgettoyshop:latest .
-
-docker run -d \
-  --name toy-shop-app \
-  -p 3000:3000 \
-  -e DATABASE_URL="postgresql://postgres:your_password@host.docker.internal:5432/shop_data" \
-  gadgettoyshop:latest
-```
-
-**For Linux:**
-```bash
-docker build -t gadgettoyshop:latest .
-
-docker run -d \
-  --name toy-shop-app \
-  -p 3000:3000 \
-  -e DATABASE_URL="postgresql://postgres:your_password@172.17.0.1:5432/shop_data" \
-  gadgettoyshop:latest
-```
-
----
-
-#### 2B: Connect to Cloud Database
-
-Use managed PostgreSQL (AWS RDS, Supabase, DigitalOcean, Neon, etc.)
 
 ```bash
 # Build image
