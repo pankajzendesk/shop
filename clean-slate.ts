@@ -17,16 +17,8 @@ async function clearDatabase() {
   await prisma.orderItem.deleteMany();
   await prisma.order.deleteMany();
   
-  console.log('🗑️ Deleting addresses for non-admin users...');
-  // Only delete addresses for users we're about to delete
-  const nonAdminUsers = await prisma.user.findMany({
-    where: { role: { not: 'admin' } },
-    select: { id: true }
-  });
-  const nonAdminUserIds = nonAdminUsers.map(u => u.id);
-  await prisma.address.deleteMany({
-    where: { userId: { in: nonAdminUserIds } }
-  });
+  console.log('🗑️ Deleting addresses and non-admin users...');
+  await prisma.address.deleteMany();
   
   const deletedUsers = await prisma.user.deleteMany({
     where: {
