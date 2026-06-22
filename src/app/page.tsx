@@ -8,7 +8,8 @@ import AppImage from '@/components/ui/AppImage';
 import Link from 'next/link';
 import prisma from '@/lib/prisma';
 
-export const revalidate = 300;
+export const revalidate = 0; // Force dynamic rendering
+export const dynamic = 'force-dynamic';
 
 interface ExperienceTile {
   id: string;
