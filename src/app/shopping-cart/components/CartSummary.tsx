@@ -174,10 +174,6 @@ const CartSummary = ({
           <Icon name="ShieldCheckIcon" size={20} className="text-success" />
           <span>Secure checkout guaranteed</span>
         </div>
-        <div className="flex items-center gap-3 text-sm text-muted-foreground">
-          <Icon name="TruckIcon" size={20} className="text-primary" />
-          <span>Free shipping above 1000 rupees</span>
-        </div>
       </div>
     </div>
   );
