@@ -86,7 +86,6 @@ export default function CheckoutIntro() {
   const deliveryMethods: DeliveryMethod[] = [
     { id: 'standard', name: 'Standard Shipping', description: 'Delivery within 5-7 business days', estimatedDays: '5-7 business days', cost: 0, icon: 'TruckIcon' },
     { id: 'express', name: 'Express Shipping', description: 'Faster delivery within 2-3 business days', estimatedDays: '2-3 business days', cost: 99, icon: 'BoltIcon' },
-    { id: 'overnight', name: 'Overnight Shipping', description: 'Next business day delivery', estimatedDays: '1 business day', cost: 249, icon: 'RocketLaunchIcon' },
   ];
 
   // Memoized Calculations
