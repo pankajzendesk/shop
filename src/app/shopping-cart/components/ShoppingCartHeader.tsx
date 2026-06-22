@@ -9,7 +9,7 @@ import SavedForLater from './SavedForLater';
 import Icon from '@/components/ui/AppIcon';
 import Notification from '@/components/ui/Notification';
 import { useCart } from '@/app/providers/CartProvider';
-import { validateCoupon } from '@/app/actions';
+import { validateCoupon, getStoreSettings } from '@/app/actions';
 
 interface CartItem {
   id: string;
@@ -47,6 +47,7 @@ interface Product {
 
 const ShoppingCartInteractive = () => {
   const [isHydrated, setIsHydrated] = useState(false);
+  const [storeSettings, setStoreSettings] = useState({ taxEnabled: false, taxPercentage: 0, taxName: 'Tax' });
   const { state, addToCart, setQuantity, removeFromCart, clear, applyCoupon, removeCoupon } = useCart();
   const [savedItems, setSavedItems] = useState<SavedItem[]>([]);
   const [showNotification, setShowNotification] = useState(false);
@@ -57,6 +58,11 @@ const ShoppingCartInteractive = () => {
   useEffect(() => {
     setIsHydrated(true);
     setSavedItems([]);
+
+    // Fetch store settings for tax
+    getStoreSettings().then(settings => {
+      setStoreSettings(settings);
+    });
   }, []);
 
   const cartItems: CartItem[] = state.items.map((item) => ({
@@ -167,9 +173,10 @@ const ShoppingCartInteractive = () => {
   };
 
   const calculateTax = () => {
+    if (!storeSettings.taxEnabled) return 0;
     const subtotal = calculateSubtotal();
     const discount = calculateDiscount();
-    return (subtotal - discount) * 0.18; // 18% GST estimate
+    return (subtotal - discount) * (storeSettings.taxPercentage / 100);
   };
 
   const calculateShipping = () => {

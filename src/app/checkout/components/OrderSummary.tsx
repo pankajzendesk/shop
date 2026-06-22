@@ -85,10 +85,12 @@ const OrderSummaryPanel = ({
           </span>
         </div>
 
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">{taxName}</span>
-          <span className="font-mono text-sm font-medium text-foreground">{formatPrice(tax)}</span>
-        </div>
+        {tax > 0 && (
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">{taxName}</span>
+            <span className="font-mono text-sm font-medium text-foreground">{formatPrice(tax)}</span>
+          </div>
+        )}
 
         {discount > 0 && (
           <div className="flex items-center justify-between">

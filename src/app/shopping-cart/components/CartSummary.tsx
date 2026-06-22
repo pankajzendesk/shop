@@ -83,10 +83,12 @@ const CartSummary = ({
           </span>
         </div>
 
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">Tax</span>
-          <span className="font-mono font-medium text-card-foreground">{formatPrice(tax)}</span>
-        </div>
+        {tax > 0 && (
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">Tax</span>
+            <span className="font-mono font-medium text-card-foreground">{formatPrice(tax)}</span>
+          </div>
+        )}
 
         {discount > 0 && (
           <div className="flex items-center justify-between text-sm">
