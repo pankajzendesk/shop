@@ -31,6 +31,11 @@ const OrderHistory = ({ orders: initialOrders }: OrderHistoryProps) => {
   const [sortBy, setSortBy] = useState<'date' | 'total'>('date');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
+  const canCancelOrder = (status: string) => {
+    const s = status.toLowerCase();
+    return s === 'pending' || s === 'processing';
+  };
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
@@ -62,6 +67,7 @@ const OrderHistory = ({ orders: initialOrders }: OrderHistoryProps) => {
     if (s === 'in transit') return 'bg-indigo-500/10 text-indigo-600';
     if (s === 'out for delivery') return 'bg-pink-500/10 text-pink-600';
     if (s === 'delivered' || s === 'delivered to customer') return 'bg-success/10 text-success';
+    if (s === 'cancelled') return 'bg-destructive/10 text-destructive';
     return 'bg-error/10 text-error';
   };
 
@@ -73,6 +79,7 @@ const OrderHistory = ({ orders: initialOrders }: OrderHistoryProps) => {
     if (s === 'shipped' || s === 'picked carrier' || s === 'in transit') return 'TruckIcon';
     if (s === 'out for delivery') return 'MapPinIcon';
     if (s === 'delivered' || s === 'delivered to customer') return 'CheckCircleIcon';
+    if (s === 'cancelled') return 'XCircleIcon';
     return 'XCircleIcon';
   };
 
@@ -190,20 +197,31 @@ const OrderHistory = ({ orders: initialOrders }: OrderHistoryProps) => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 <div className="text-right">
                   <p className="text-sm text-muted-foreground">Total</p>
                   <p className="font-mono text-xl font-bold text-primary">
                     {formatPrice(order.total)}
                   </p>
                 </div>
-                <button 
-                  onClick={() => setSelectedOrder(order)}
-                  className="flex items-center gap-2 rounded-lg bg-muted px-4 py-2 font-medium text-foreground transition-smooth hover:bg-muted/80"
-                >
-                  <span>View Details</span>
-                  <Icon name="ArrowRightIcon" size={16} />
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setSelectedOrder(order)}
+                    className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground transition-smooth hover:bg-primary/90"
+                  >
+                    <span>View</span>
+                    <Icon name="ArrowRightIcon" size={16} />
+                  </button>
+                  {canCancelOrder(order.status) && (
+                    <button
+                      onClick={() => setSelectedOrder(order)}
+                      className="flex items-center gap-2 rounded-lg bg-destructive/10 border border-destructive/20 px-4 py-2 font-medium text-destructive transition-smooth hover:bg-destructive/20"
+                    >
+                      <Icon name="XMarkIcon" size={16} />
+                      <span>Cancel</span>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           ))}
@@ -211,9 +229,13 @@ const OrderHistory = ({ orders: initialOrders }: OrderHistoryProps) => {
       )}
 
       {selectedOrder && (
-        <OrderDetailsModal 
-          order={selectedOrder} 
-          onClose={() => setSelectedOrder(null)} 
+        <OrderDetailsModal
+          order={selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+          onOrderUpdated={() => {
+            // Reload orders after cancellation/return
+            setSelectedOrder(null);
+          }}
         />
       )}
     </div>

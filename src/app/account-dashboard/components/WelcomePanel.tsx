@@ -73,21 +73,13 @@ const WelcomePanel = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
-          <div className="rounded-lg bg-white/20 p-4 backdrop-blur-sm">
+        <div className="flex justify-center md:justify-end">
+          <div className="rounded-lg bg-white/20 p-4 backdrop-blur-sm min-w-[140px]">
             <div className="flex items-center gap-2">
               <Icon name="ShoppingBagIcon" size={20} className="text-white" />
               <p className="text-xs font-medium text-white/90">Total Orders</p>
             </div>
             <p className="mt-2 font-mono text-2xl font-bold text-white">{totalOrders}</p>
-          </div>
-
-          <div className="rounded-lg bg-white/20 p-4 backdrop-blur-sm">
-             <div className="flex items-center gap-2">
-                <Icon name="CheckCircleIcon" size={20} className="text-white" />
-                <p className="text-xs font-medium text-white/90">Account Status</p>
-             </div>
-             <p className="mt-2 font-mono text-2xl font-bold text-white uppercase tracking-wider">Active</p>
           </div>
         </div>
       </div>

@@ -264,7 +264,13 @@ export default function CheckoutIntro() {
       });
 
       clear(); // Clear cart logic
-      setIsSlicing(true); // Start animation
+      setShowCelebration(true); // Show success message directly
+
+      // Auto-redirect after 2 seconds
+      setTimeout(() => {
+        setShowCelebration(false);
+        router.push("/product-catalog");
+      }, 2000);
     } catch (error) {
       console.error("Failed to place order:", error);
       showNotify("Failed to place order. Please try again.", "error");
@@ -276,18 +282,18 @@ export default function CheckoutIntro() {
   const handleSlicingComplete = () => {
     setIsSlicing(false);
     setShowCelebration(true);
-    
-    // Auto-redirect after 3 seconds
+
+    // Auto-redirect after 2 seconds
     setTimeout(() => {
       setShowCelebration(false);
       router.push("/product-catalog");
-    }, 4000);
+    }, 2000);
   };
 
   // --- Render Helpers ---
 
   if (!isHydrated) return <LoadingSkeleton />;
-  if (cartItems.length === 0 && !isSlicing && !showCelebration) return <EmptyCartView router={router} />;
+  if (cartItems.length === 0 && !showCelebration) return <EmptyCartView router={router} />;
 
   return (
     <div className="min-h-screen bg-background pb-12 relative">
@@ -402,12 +408,6 @@ export default function CheckoutIntro() {
         </div>
       </div>
 
-      <OrderSlicingOverlay
-        isVisible={isSlicing}
-        totalItems={cartItems.reduce((acc, item) => acc + item.quantity, 0)}
-        onComplete={handleSlicingComplete}
-      />
-
       {showCelebration && <CelebrationOverlay />}
     </div>
   );
@@ -448,40 +448,59 @@ function EmptyCartView({ router }: Readonly<{ router: any }>) {
 }
 
 function CelebrationOverlay() {
+  const confettiColors = ['#EF2964', '#00C09D', '#2D87B0', '#48485E', '#EFFF1D'];
+  const confettiAnimations = ['slow', 'medium', 'fast'];
+
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-      {/* Confetti Background Layer */}
-      <div className="absolute inset-0 z-[201] pointer-events-none overflow-hidden h-full w-full">
-         <img 
-            src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3pjdW13enR3Z3p3Z3p3Z3p3Z3p3Z3p3Z3p3Z3p3Z3p3ZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/26tOZ42Mg6pbMubM4/giphy.gif" 
-            className="w-full h-full object-cover opacity-60 mix-blend-screen" 
-            alt="Confetti Background"
-         />
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60">
+      {/* Confetti Container */}
+      <div className="absolute inset-0 z-[201] overflow-hidden pointer-events-none" style={{ perspective: '700px' }}>
+        {Array.from({ length: 80 }).map((_, i) => {
+          const size = Math.floor(Math.random() * 3) + 7;
+          const color = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+          const left = Math.floor(Math.random() * 100);
+          const animClass = confettiAnimations[Math.floor(Math.random() * confettiAnimations.length)];
+          const delay = Math.random() * 2;
+
+          return (
+            <div
+              key={i}
+              className={`absolute animate-confetti-${animClass}`}
+              style={{
+                width: `${size}px`,
+                height: `${size}px`,
+                backgroundColor: color,
+                top: '-10px',
+                left: `${left}%`,
+                zIndex: 1,
+                animationDelay: `${delay}s`,
+              }}
+            />
+          );
+        })}
       </div>
 
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-md animate-in fade-in duration-500" />
-      
-      <div className="relative z-[210] flex flex-col items-center justify-center rounded-[3rem] bg-card p-12 text-center shadow-[0_30px_100px_rgba(0,0,0,0.6)] border-8 border-primary animate-in zoom-in-90 duration-500 max-w-xl w-full">
-        <div className="mb-8 flex h-40 w-40 items-center justify-center rounded-full bg-primary/20 text-primary animate-bounce shadow-inner">
-          <Icon name="CheckCircleIcon" size={100} />
+      {/* Success Message */}
+      <div className="relative z-[210] flex flex-col items-center gap-6 bg-white px-16 py-12 shadow-2xl animate-in zoom-in-95 duration-300 rounded-xl">
+        {/* Animated Checkmark Circle */}
+        <div className="w-[150px] h-[150px] relative inline-block">
+          <div className="w-[150px] h-[150px] rounded-full bg-[#00C09D] absolute" />
+          <div className="absolute animate-checkmark" style={{
+            width: '37.5px',
+            height: '75px',
+            borderRight: '15px solid white',
+            borderTop: '15px solid white',
+            borderRadius: '2.5px',
+            left: '25px',
+            top: '75px',
+            transform: 'scaleX(-1) rotate(135deg)',
+            transformOrigin: 'left top',
+          }} />
         </div>
-        
-        <h2 className="mb-4 font-heading text-5xl font-black text-foreground uppercase tracking-tighter">
-          Congrats!
-        </h2>
-        <p className="mb-4 text-3xl font-extrabold text-primary">
-          Your order is placed
-        </p>
-        <p className="text-xl text-muted-foreground font-medium">
-          Thank you for shopping with us!
-        </p>
 
-        <div className="mt-12 h-3 w-full overflow-hidden rounded-full bg-muted">
-          <div className="h-full bg-primary animate-progress-fast shadow-[0_0_15px_rgba(var(--color-primary),0.5)]" />
-        </div>
-        <p className="mt-6 text-sm font-bold text-primary animate-pulse tracking-widest uppercase">
-          Redirecting to Shop...
-        </p>
+        {/* Text */}
+        <h1 className="text-5xl font-black text-gray-800 tracking-tight">Congratulations!</h1>
+        <p className="text-xl text-gray-600">Your order has been placed successfully</p>
       </div>
     </div>
   );

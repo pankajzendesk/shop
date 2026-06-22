@@ -214,6 +214,45 @@
   .animate-bounce-slow {
     animation: bounce-slow 3s ease-in-out infinite;
   }
+
+  @keyframes confetti-slow {
+    0% { transform: translate3d(0, 0, 0) rotateX(0) rotateY(0); }
+    100% { transform: translate3d(25px, 105vh, 0) rotateX(360deg) rotateY(180deg); }
+  }
+
+  @keyframes confetti-medium {
+    0% { transform: translate3d(0, 0, 0) rotateX(0) rotateY(0); }
+    100% { transform: translate3d(100px, 105vh, 0) rotateX(100deg) rotateY(360deg); }
+  }
+
+  @keyframes confetti-fast {
+    0% { transform: translate3d(0, 0, 0) rotateX(0) rotateY(0); }
+    100% { transform: translate3d(-50px, 105vh, 0) rotateX(10deg) rotateY(250deg); }
+  }
+
+  .animate-confetti-slow {
+    animation: confetti-slow 2.25s linear 1 forwards;
+  }
+
+  .animate-confetti-medium {
+    animation: confetti-medium 1.75s linear 1 forwards;
+  }
+
+  .animate-confetti-fast {
+    animation: confetti-fast 1.25s linear 1 forwards;
+  }
+
+  @keyframes checkmark {
+    0% { height: 0; width: 0; opacity: 1; }
+    20% { height: 0; width: 37.5px; opacity: 1; }
+    40% { height: 75px; width: 37.5px; opacity: 1; }
+    100% { height: 75px; width: 37.5px; opacity: 1; }
+  }
+
+  .animate-checkmark {
+    animation: checkmark 3s ease forwards;
+    animation-delay: 100ms;
+  }
 }
 
 @layer utilities {

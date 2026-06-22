@@ -39,31 +39,47 @@ interface OrderDetailsModalProps {
     deliveryImage?: string;
   };
   onClose: () => void;
+  onOrderUpdated?: () => void;
 }
 
-export default function OrderDetailsModal({ order, onClose }: Readonly<OrderDetailsModalProps>) {
+export default function OrderDetailsModal({ order, onClose, onOrderUpdated }: Readonly<OrderDetailsModalProps>) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showReturnDialog, setShowReturnDialog] = useState(false);
   const [reason, setReason] = useState('');
+  const [cancelReason, setCancelReason] = useState('');
+  const [customCancelReason, setCustomCancelReason] = useState('');
   const [returnType, setReturnType] = useState<'REFUND' | 'REPLACEMENT'>('REFUND');
+
+  const cancelReasons = [
+    'Changed my mind',
+    'Found better price elsewhere',
+    'Ordered by mistake',
+    'Delivery time is too long',
+    'Product no longer needed',
+    'Other'
+  ];
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
-      maximumFractionDigits: 0,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(price);
   };
 
   const handleCancelOrder = async () => {
-    if (!reason.trim()) return;
+    const finalReason = cancelReason === 'Other' ? customCancelReason.trim() : cancelReason;
+    if (!finalReason) return;
     setIsProcessing(true);
     try {
-      // @ts-ignore
-      await cancelOrder(order.id, reason);
+      await cancelOrder(order.id, finalReason);
+      if (onOrderUpdated) {
+        onOrderUpdated();
+      }
       onClose();
-      globalThis.location.reload(); 
+      globalThis.location.reload();
     } catch (error) {
       console.error(error);
       setIsProcessing(false);
@@ -74,8 +90,10 @@ export default function OrderDetailsModal({ order, onClose }: Readonly<OrderDeta
     if (!reason.trim()) return;
     setIsProcessing(true);
     try {
-      // @ts-ignore
       await requestReturn(order.id, { reason, type: returnType });
+      if (onOrderUpdated) {
+        onOrderUpdated();
+      }
       onClose();
       globalThis.location.reload();
     } catch (error) {
@@ -217,27 +235,39 @@ export default function OrderDetailsModal({ order, onClose }: Readonly<OrderDeta
               <div className="space-y-3">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground font-medium">Subtotal</span>
-                  <span className="text-foreground font-bold">{formatPrice(order.total -(order.taxAmount || 0) - (order.shippingCost || 0))}</span>
+                  <span className="text-foreground font-bold whitespace-nowrap">{formatPrice(order.total -(order.taxAmount || 0) - (order.shippingCost || 0))}</span>
                 </div>
                 {order.taxAmount && (
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground font-medium">GST / Tax</span>
-                    <span className="text-foreground font-bold">{formatPrice(order.taxAmount)}</span>
+                    <span className="text-foreground font-bold whitespace-nowrap">{formatPrice(order.taxAmount)}</span>
                   </div>
                 )}
                 {order.shippingCost && (
                    <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground font-medium">Shipping</span>
-                    <span className="text-foreground font-bold">{formatPrice(order.shippingCost)}</span>
+                    <span className="text-foreground font-bold whitespace-nowrap">{formatPrice(order.shippingCost)}</span>
                   </div>
                 )}
                 <div className="pt-3 border-t border-dashed border-border flex justify-between">
                   <span className="text-base font-black text-foreground tracking-tight">Total Amount</span>
-                  <span className="text-xl font-black text-primary">{formatPrice(order.total)}</span>
+                  <span className="text-xl font-black text-primary whitespace-nowrap">{formatPrice(order.total)}</span>
                 </div>
               </div>
             </div>
           </div>
+
+          {/* Cancel Order Button */}
+          {(['Processing', 'Pending'].includes(order.status)) && (
+            <div className="pt-4 border-t border-border">
+              <button
+                onClick={() => setShowCancelDialog(true)}
+                className="w-full py-3 text-sm font-black text-destructive hover:bg-destructive/10 rounded-xl transition-all border-2 border-destructive/20 hover:border-destructive/40"
+              >
+                Cancel Order
+              </button>
+            </div>
+          )}
 
           {/* Timeline */}
           <div className="pt-4 border-t border-border">
@@ -267,16 +297,8 @@ export default function OrderDetailsModal({ order, onClose }: Readonly<OrderDeta
         </div>
 
         {/* Footer Actions */}
-        {(order.status === 'Processing' || (order.status === 'Delivered' && !order.returnStatus)) && (
+        {(order.status === 'Delivered' && !order.returnStatus) && (
           <div className="p-6 bg-white border-t border-border flex gap-3 justify-end items-center">
-            {order.status === 'Processing' && (
-              <button
-                onClick={() => setShowCancelDialog(true)}
-                className="px-6 py-3 text-sm font-black text-destructive hover:bg-destructive/10 rounded-2xl transition-all border-2 border-transparent hover:border-destructive/20"
-              >
-                Cancel Order
-              </button>
-            )}
             {order.status === 'Delivered' && !order.returnStatus && (
               <button
                 onClick={() => setShowReturnDialog(true)}
@@ -293,7 +315,7 @@ export default function OrderDetailsModal({ order, onClose }: Readonly<OrderDeta
 
         {/* Cancel Confirmation Dialog */}
         {showCancelDialog && (
-          <div className="absolute inset-0 z-[110] bg-white rounded-3xl p-8 flex flex-col justify-center animate-in slide-in-from-bottom-4 duration-300">
+          <div className="absolute inset-0 z-[110] bg-white rounded-3xl p-8 flex flex-col justify-center animate-in slide-in-from-bottom-4 duration-300 overflow-y-auto">
              <div className="max-w-md mx-auto w-full text-center space-y-6">
                 <div className="w-20 h-20 bg-destructive/10 rounded-3xl flex items-center justify-center mx-auto text-destructive">
                    <Icon name="ExclamationTriangleIcon" size={40} />
@@ -302,26 +324,60 @@ export default function OrderDetailsModal({ order, onClose }: Readonly<OrderDeta
                    <h3 className="text-2xl font-black text-foreground mb-2">Cancel your order?</h3>
                    <p className="text-sm text-muted-foreground font-medium">Please let us know why you are cancelling. This action cannot be undone.</p>
                 </div>
-                <div className="text-left">
-                  <label htmlFor="cancel-reason" className="text-[10px] font-bold uppercase text-muted-foreground ml-1">Reason for cancellation</label>
-                  <textarea 
-                    id="cancel-reason"
-                    value={reason}
-                    onChange={(e) => setReason(e.target.value)}
-                    className="w-full mt-1.5 p-4 rounded-2xl bg-muted/50 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all h-32 text-sm font-medium"
-                    placeholder="Enter reason here..."
-                  />
+                <div className="text-left space-y-4">
+                  <div>
+                    <label className="text-[10px] font-bold uppercase text-muted-foreground ml-1">Select reason for cancellation</label>
+                    <div className="mt-2 space-y-2">
+                      {cancelReasons.map((r) => (
+                        <label
+                          key={r}
+                          className={`flex items-center gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                            cancelReason === r
+                              ? 'border-primary bg-primary/5'
+                              : 'border-border bg-muted/30 hover:bg-muted/50'
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="cancelReason"
+                            value={r}
+                            checked={cancelReason === r}
+                            onChange={(e) => setCancelReason(e.target.value)}
+                            className="h-4 w-4 text-primary accent-primary"
+                          />
+                          <span className="text-sm font-medium text-foreground">{r}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {cancelReason === 'Other' && (
+                    <div>
+                      <label htmlFor="custom-cancel-reason" className="text-[10px] font-bold uppercase text-muted-foreground ml-1">Please specify</label>
+                      <textarea
+                        id="custom-cancel-reason"
+                        value={customCancelReason}
+                        onChange={(e) => setCustomCancelReason(e.target.value)}
+                        className="w-full mt-1.5 p-4 rounded-2xl bg-muted/50 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all h-24 text-sm font-medium"
+                        placeholder="Enter your reason..."
+                      />
+                    </div>
+                  )}
                 </div>
                 <div className="flex gap-4">
-                  <button 
-                    onClick={() => setShowCancelDialog(false)}
+                  <button
+                    onClick={() => {
+                      setShowCancelDialog(false);
+                      setCancelReason('');
+                      setCustomCancelReason('');
+                    }}
                     className="flex-1 py-4 text-sm font-bold text-muted-foreground hover:bg-muted rounded-2xl transition-all"
                   >
                     Go Back
                   </button>
-                  <button 
+                  <button
                     onClick={handleCancelOrder}
-                    disabled={!reason.trim() || isProcessing}
+                    disabled={!cancelReason || (cancelReason === 'Other' && !customCancelReason.trim()) || isProcessing}
                     className="flex-1 py-4 bg-destructive text-white text-sm font-black rounded-2xl shadow-lg shadow-destructive/20 hover:bg-destructive/90 disabled:opacity-50 transition-all"
                   >
                     {isProcessing ? 'Processing...' : 'Confirm Cancellation'}
