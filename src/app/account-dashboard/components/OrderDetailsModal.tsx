@@ -257,8 +257,8 @@ export default function OrderDetailsModal({ order, onClose, onOrderUpdated }: Re
             </div>
           </div>
 
-          {/* Cancel Order Button */}
-          {(['Processing', 'Pending'].includes(order.status)) && (
+          {/* Cancel Order Button - Available until delivered */}
+          {!(['Delivered', 'Delivered to Customer', 'Cancelled'].includes(order.status)) && (
             <div className="pt-4 border-t border-border">
               <button
                 onClick={() => setShowCancelDialog(true)}
@@ -273,22 +273,33 @@ export default function OrderDetailsModal({ order, onClose, onOrderUpdated }: Re
           <div className="pt-4 border-t border-border">
             <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-6 ml-1 text-center">Order Logistics Journey</h4>
             <div className="relative">
-              <div className="absolute left-[15px] top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary/10 via-primary/5 to-transparent"></div>
-              <div className="space-y-6 relative">
-                {[...(order.statusHistory || [])].reverse().map((history, idx) => (
-                  <div key={history.id} className="flex gap-4 items-start pl-1">
-                    <div className={`mt-1.5 h-7 w-7 rounded-full border-4 border-white shadow-sm flex-shrink-0 z-10 flex items-center justify-center ${idx === 0 ? 'bg-primary' : 'bg-muted-foreground/30'}`}>
-                      {idx === 0 && <div className="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></div>}
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <p className={`text-sm font-black ${idx === 0 ? 'text-primary' : 'text-foreground'}`}>{history.status}</p>
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase opacity-60">
-                          {new Date(history.timestamp).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}
-                        </p>
+              <div className="space-y-0 relative">
+                {[...(order.statusHistory || [])].reverse().map((history, idx, arr) => (
+                  <div key={history.id}>
+                    <div className="flex gap-4 items-start pl-1">
+                      <div className={`mt-1.5 h-7 w-7 rounded-full border-4 border-white shadow-sm flex-shrink-0 z-10 flex items-center justify-center ${idx === 0 ? 'bg-primary' : 'bg-muted-foreground/30'}`}>
+                        {idx === 0 && <div className="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></div>}
                       </div>
-                      {history.note && <p className="text-xs text-muted-foreground mt-1 italic font-medium">"{history.note}"</p>}
+                      <div className="pt-1">
+                        <div className="flex items-center gap-2">
+                          <p className={`text-sm font-black ${idx === 0 ? 'text-primary' : 'text-foreground'}`}>{history.status}</p>
+                          <p className="text-[10px] font-bold text-muted-foreground uppercase opacity-60">
+                            {new Date(history.timestamp).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}
+                          </p>
+                        </div>
+                        {history.note && <p className="text-xs text-muted-foreground mt-1 italic font-medium">"{history.note}"</p>}
+                      </div>
                     </div>
+                    {/* Arrow connecting to next item */}
+                    {idx < arr.length - 1 && (
+                      <div className="flex items-center pl-1 py-2">
+                        <div className="w-7 flex justify-center">
+                          <svg className="w-4 h-8 text-primary/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                          </svg>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

@@ -204,24 +204,13 @@ const OrderHistory = ({ orders: initialOrders }: OrderHistoryProps) => {
                     {formatPrice(order.total)}
                   </p>
                 </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setSelectedOrder(order)}
-                    className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground transition-smooth hover:bg-primary/90"
-                  >
-                    <span>View</span>
-                    <Icon name="ArrowRightIcon" size={16} />
-                  </button>
-                  {canCancelOrder(order.status) && (
-                    <button
-                      onClick={() => setSelectedOrder(order)}
-                      className="flex items-center gap-2 rounded-lg bg-destructive/10 border border-destructive/20 px-4 py-2 font-medium text-destructive transition-smooth hover:bg-destructive/20"
-                    >
-                      <Icon name="XMarkIcon" size={16} />
-                      <span>Cancel</span>
-                    </button>
-                  )}
-                </div>
+                <button
+                  onClick={() => setSelectedOrder(order)}
+                  className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground transition-smooth hover:bg-primary/90"
+                >
+                  <span>View Details</span>
+                  <Icon name="ArrowRightIcon" size={16} />
+                </button>
               </div>
             </div>
           ))}
