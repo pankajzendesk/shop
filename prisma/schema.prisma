@@ -260,6 +260,32 @@ model PaymentMethod {
   updatedAt   DateTime @updatedAt
 }
 
+model Cart {
+  id        String     @id @default(cuid())
+  userId    String     @unique
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([userId])
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cartId    String
+  productId String
+  name      String
+  price     Float
+  quantity  Int
+  image     String?
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([cartId])
+  @@index([productId])
+}
+
 model OrderItem {
   id           String  @id @default(cuid())
   orderId      String

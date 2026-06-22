@@ -2150,3 +2150,110 @@ export async function createOrUpdateCoupon(data: any) {
     });
   }
 }
+
+// Cart Management Actions
+export async function getUserCart(userId: string) {
+  'use server';
+  try {
+    let cart = await prisma.cart.findUnique({
+      where: { userId },
+      include: { items: true }
+    });
+
+    if (!cart) {
+      cart = await prisma.cart.create({
+        data: { userId },
+        include: { items: true }
+      });
+    }
+
+    return cart;
+  } catch (error) {
+    console.error('Failed to get user cart:', error);
+    return null;
+  }
+}
+
+export async function addToUserCart(userId: string, item: { productId: string, name: string, price: number, quantity: number, image?: string }) {
+  'use server';
+  try {
+    const cart = await getUserCart(userId);
+    if (!cart) return null;
+
+    const existingItem = cart.items.find(i => i.productId === item.productId);
+
+    if (existingItem) {
+      return await prisma.cartItem.update({
+        where: { id: existingItem.id },
+        data: { quantity: existingItem.quantity + item.quantity }
+      });
+    } else {
+      return await prisma.cartItem.create({
+        data: {
+          cartId: cart.id,
+          productId: item.productId,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image
+        }
+      });
+    }
+  } catch (error) {
+    console.error('Failed to add to cart:', error);
+    return null;
+  }
+}
+
+export async function updateCartItemQuantity(userId: string, productId: string, quantity: number) {
+  'use server';
+  try {
+    const cart = await getUserCart(userId);
+    if (!cart) return null;
+
+    const item = cart.items.find(i => i.productId === productId);
+    if (!item) return null;
+
+    if (quantity <= 0) {
+      return await prisma.cartItem.delete({ where: { id: item.id } });
+    }
+
+    return await prisma.cartItem.update({
+      where: { id: item.id },
+      data: { quantity }
+    });
+  } catch (error) {
+    console.error('Failed to update cart item:', error);
+    return null;
+  }
+}
+
+export async function removeFromUserCart(userId: string, productId: string) {
+  'use server';
+  try {
+    const cart = await getUserCart(userId);
+    if (!cart) return null;
+
+    const item = cart.items.find(i => i.productId === productId);
+    if (!item) return null;
+
+    return await prisma.cartItem.delete({ where: { id: item.id } });
+  } catch (error) {
+    console.error('Failed to remove from cart:', error);
+    return null;
+  }
+}
+
+export async function clearUserCart(userId: string) {
+  'use server';
+  try {
+    const cart = await getUserCart(userId);
+    if (!cart) return null;
+
+    await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
+    return true;
+  } catch (error) {
+    console.error('Failed to clear cart:', error);
+    return false;
+  }
+}

@@ -46,6 +46,8 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
   const logout = () => {
     setUser(null);
     localStorage.removeItem('toyshop.user');
+    // Clear cart on logout
+    localStorage.removeItem('toyshop.cart.v2');
   };
 
   const authValue = useMemo(() => ({
