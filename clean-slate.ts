@@ -71,6 +71,26 @@ async function seedCategories() {
       }
     });
   }
+
+  console.log('🌱 Seeding experience tiles...');
+  const experienceTiles = [
+    { name: 'Smart Gadgets', image: 'https://images.unsplash.com/photo-1550009158-9ebf69173e03?w=400&h=400&fit=crop', color: 'bg-blue-500' },
+    { name: 'Gaming Zone', image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=400&fit=crop', color: 'bg-purple-500' },
+    { name: 'Educational', image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&h=400&fit=crop', color: 'bg-green-500' },
+    { name: 'Outdoor Fun', image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=400&h=400&fit=crop', color: 'bg-orange-500' },
+    { name: 'Creative Arts', image: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&h=400&fit=crop', color: 'bg-pink-500' },
+  ];
+
+  for (const tile of experienceTiles) {
+    await prisma.experienceTile.upsert({
+      where: { id: `exp-${tile.name.toLowerCase().replace(/\s+/g, '-')}` },
+      update: tile,
+      create: {
+        id: `exp-${tile.name.toLowerCase().replace(/\s+/g, '-')}`,
+        ...tile
+      }
+    });
+  }
 }
 
 async function seedProducts() {
