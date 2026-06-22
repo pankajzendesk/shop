@@ -80,4 +80,186 @@ npm run clean
 - **`public/uploads/delivery`**: Where we save photos taken by delivery boys.
 
 ---
+
+## 🐳 Docker Deployment Options
+
+### Option 1: Full Stack (App + Database) - Default Setup
+
+Run both application and PostgreSQL database together:
+
+```bash
+# Start everything
+docker compose up -d
+
+# View logs
+docker compose logs -f app
+
+# Stop services
+docker compose down
+```
+
+**Access:** http://localhost:3000
+
+---
+
+### Option 2: App-Only Container with External Database
+
+If you want to use an external or local PostgreSQL database:
+
+#### 2A: Connect to Local PostgreSQL (on your machine)
+
+**Step 1:** Configure local PostgreSQL to accept connections
+
+Edit `postgresql.conf`:
+```conf
+listen_addresses = '*'
+```
+
+Edit `pg_hba.conf` (add this line):
+```conf
+host    all    all    0.0.0.0/0    md5
+```
+
+Restart PostgreSQL:
+```bash
+# Mac (Homebrew)
+brew services restart postgresql
+
+# Linux
+sudo systemctl restart postgresql
+```
+
+**Step 2:** Create database
+```bash
+psql -U postgres
+CREATE DATABASE shop_data;
+\q
+```
+
+**Step 3:** Build and run app container
+
+**For Mac/Windows:**
+```bash
+docker build -t gadgettoyshop:latest .
+
+docker run -d \
+  --name toy-shop-app \
+  -p 3000:3000 \
+  -e DATABASE_URL="postgresql://postgres:your_password@host.docker.internal:5432/shop_data" \
+  gadgettoyshop:latest
+```
+
+**For Linux:**
+```bash
+docker build -t gadgettoyshop:latest .
+
+docker run -d \
+  --name toy-shop-app \
+  -p 3000:3000 \
+  -e DATABASE_URL="postgresql://postgres:your_password@172.17.0.1:5432/shop_data" \
+  gadgettoyshop:latest
+```
+
+---
+
+#### 2B: Connect to Cloud Database
+
+Use managed PostgreSQL (AWS RDS, Supabase, DigitalOcean, Neon, etc.)
+
+```bash
+# Build image
+docker build -t gadgettoyshop:latest .
+
+# Run with external database URL
+docker run -d \
+  --name toy-shop-app \
+  -p 3000:3000 \
+  -e DATABASE_URL="postgresql://user:password@external-host:5432/dbname" \
+  gadgettoyshop:latest
+```
+
+**Example connection strings:**
+- AWS RDS: `postgresql://user:pass@db.abc123.us-east-1.rds.amazonaws.com:5432/shop_data`
+- Supabase: `postgresql://postgres:pass@db.xxxx.supabase.co:5432/postgres`
+- DigitalOcean: `postgresql://doadmin:pass@db-postgresql-nyc3-12345.ondigitalocean.com:25060/defaultdb`
+
+---
+
+### 🔧 Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `DATABASE_URL` | PostgreSQL connection string | Required |
+| `PORT` | Application port | `3000` |
+| `NEXT_PUBLIC_SHOP_NAME` | Shop name | `GiftShop` |
+
+---
+
+### 🛠️ Database Management
+
+**View logs:**
+```bash
+docker logs -f toy-shop-app
+```
+
+**Run migrations manually:**
+```bash
+docker exec -it toy-shop-app npx prisma migrate deploy
+```
+
+**Reset database (clean slate):**
+```bash
+docker exec -it toy-shop-app npx tsx clean-slate.ts
+```
+
+**Backup database:**
+```bash
+# If using docker-compose database
+docker exec toy-shop-postgres pg_dump -U postgres shop_data > backup.sql
+
+# If using local PostgreSQL
+pg_dump -U postgres shop_data > backup.sql
+```
+
+**Restore database:**
+```bash
+# Docker database
+cat backup.sql | docker exec -i toy-shop-postgres psql -U postgres shop_data
+
+# Local PostgreSQL
+psql -U postgres shop_data < backup.sql
+```
+
+---
+
+### 🚨 Troubleshooting
+
+**App can't connect to local database:**
+- Mac/Windows: Use `host.docker.internal` not `localhost`
+- Linux: Use `172.17.0.1` or run with `--network host`
+- Check PostgreSQL is running: `pg_isready`
+
+**Database connection refused:**
+```bash
+# Check PostgreSQL status
+brew services list | grep postgresql  # Mac
+sudo systemctl status postgresql      # Linux
+
+# Check port is open
+netstat -an | grep 5432
+```
+
+**Container exits immediately:**
+```bash
+# Check logs for errors
+docker logs toy-shop-app
+
+# Common issues:
+# - Invalid DATABASE_URL format
+# - Database not accessible from container
+# - Port 3000 already in use
+```
+
+---
+
 Built with ❤️ for High-Performance Toy Retailers.
