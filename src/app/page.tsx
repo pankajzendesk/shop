@@ -183,64 +183,6 @@ export default async function HomePage() {
               </div>
            </div>
         </section>
-
-        {/* Feature Highlights */}
-        <section className="bg-muted py-24">
-          <div className="mx-auto max-w-[1440px] px-6">
-            <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
-              <div className="flex flex-col items-center text-center">
-                <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-white text-primary shadow-sm">
-                  <Icon name="ShieldCheckIcon" size={32} />
-                </div>
-                <h3 className="mb-3 font-heading text-xl font-bold">1-Year Warranty</h3>
-                <p className="text-muted-foreground">We stand behind the quality of every gadget we sell. Full protection guaranteed.</p>
-              </div>
-              <div className="flex flex-col items-center text-center">
-                <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-white text-primary shadow-sm">
-                  <Icon name="ArrowPathIcon" size={32} />
-                </div>
-                <h3 className="mb-3 font-heading text-xl font-bold">30-Day Returns</h3>
-                <p className="text-muted-foreground">Not satisfy with your purchase? No worries, return it within 30 days for a full refund.</p>
-              </div>
-              <div className="flex flex-col items-center text-center">
-                <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-white text-primary shadow-sm">
-                  <Icon name="ChatBubbleLeftRightIcon" size={32} />
-                </div>
-                <h3 className="mb-3 font-heading text-xl font-bold">24/7 Expert Support</h3>
-                <p className="text-muted-foreground">Our team of experts is dedicated to helping you find the right toys for your needs.</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Newsletter / CTA */}
-        <section className="py-24">
-          <div className="mx-auto max-w-4xl px-6">
-            <div className="rounded-[3rem] bg-gradient-to-br from-primary via-primary to-secondary p-12 text-center text-primary-foreground shadow-2xl relative overflow-hidden">
-              <div className="relative z-10">
-                <h2 className="mb-4 font-heading text-3xl sm:text-4xl font-extrabold tracking-tight">Ready to explore?</h2>
-                <p className="mb-8 text-base sm:text-lg opacity-90 font-medium">Join 50,000+ happy customers and get early access to our latest gadget drops.</p>
-                <div className="mx-auto flex flex-col sm:flex-row max-w-md gap-3" suppressHydrationWarning>
-                   <input 
-                     type="email" 
-                     placeholder="Enter your email" 
-                     autoComplete="off"
-                     data-lpignore="true"
-                     data-1p-ignore="true"
-                     suppressHydrationWarning
-                     className="flex-1 rounded-xl border-0 bg-white/20 px-6 py-4 font-medium text-white placeholder:text-white/60 focus:ring-2 focus:ring-white/50 w-full"
-                   />
-                   <button className="rounded-xl bg-white px-8 py-4 font-bold text-primary transition-smooth hover:bg-opacity-90 w-full sm:w-auto whitespace-nowrap">
-                      Join Now
-                   </button>
-                </div>
-              </div>
-              {/* Decorative circle */}
-              <div className="absolute -bottom-20 -right-20 h-64 w-64 rounded-full bg-white/10 blur-3xl shadow-white/5" />
-              <div className="absolute -top-20 -left-20 h-64 w-64 rounded-full bg-white/10 blur-3xl shadow-white/5" />
-            </div>
-          </div>
-        </section>
       </main>
 
       <footer className="border-t border-border py-12 text-center text-sm text-muted-foreground">
