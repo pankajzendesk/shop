@@ -94,16 +94,8 @@ export default async function HomePage() {
       <main className="flex-grow py-4 space-y-6">
         {/* Flipkart-style Top Portion */}
         <CategoryBar initialCategories={categories} />
-        
-        <div className="mx-auto max-w-[1440px] px-2 md:px-6">
-          <BannerCarousel initialSlides={banners} />
-        </div>
 
-        <TopDeals initialDeals={deals} />
-
-        <PromoOffers initialCoupons={coupons} />
-
-        {/* Featured Categories with Catchy Images */}
+        {/* Shop by Experience - Moved to top */}
         <section className="py-24 border-t border-border bg-muted/30">
           <div className="mx-auto max-w-[1440px] px-6">
             <div className="text-center max-w-2xl mx-auto mb-16">
@@ -140,6 +132,17 @@ export default async function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* Banner Carousel */}
+        <div className="mx-auto max-w-[1440px] px-2 md:px-6">
+          <BannerCarousel initialSlides={banners} />
+        </div>
+
+        {/* Hot Deals */}
+        <TopDeals initialDeals={deals} />
+
+        {/* Promo Offers */}
+        <PromoOffers initialCoupons={coupons} />
 
         {/* Trending Now Section */}
         <section className="py-24">
