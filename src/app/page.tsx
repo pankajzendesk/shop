@@ -143,46 +143,6 @@ export default async function HomePage() {
 
         {/* Promo Offers */}
         <PromoOffers initialCoupons={coupons} />
-
-        {/* Trending Now Section */}
-        <section className="py-24">
-           <div className="mx-auto max-w-[1440px] px-6">
-              <div className="flex items-end justify-between mb-12">
-                 <div>
-                    <h2 className="font-heading text-4xl font-extrabold text-foreground">Trending Now</h2>
-                    <p className="mt-2 text-muted-foreground">These gadgets are flying off the shelves!</p>
-                 </div>
-                 <Link href="/product-catalog" className="hidden sm:flex items-center gap-2 font-bold text-primary hover:underline underline-offset-4">
-                    <span>View All Products</span>
-                    <Icon name="ArrowRightIcon" size={18} />
-                 </Link>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-                 {trending.map((product: any) => (
-                    <Link key={product.id} href={`/product-catalog`} className="group flex flex-col overflow-hidden rounded-[2rem] border border-border bg-white transition-smooth hover:shadow-warm-xl">
-                       <div className="relative h-48 sm:h-72 w-full overflow-hidden bg-muted">
-                          <AppImage src={product.image} alt={product.name} fill className="object-cover transition-smooth group-hover:scale-105" />
-                          <div className="absolute left-4 top-4">
-                             <span className="rounded-full bg-white/90 backdrop-blur-sm px-4 py-1.5 text-xs font-bold text-foreground shadow-sm">
-                                {product.tag}
-                             </span>
-                          </div>
-                       </div>
-                       <div className="p-6">
-                          <div className="flex items-center justify-between">
-                             <h3 className="font-heading text-xl font-bold text-foreground">{product.name}</h3>
-                             <p className="font-mono text-lg font-black text-primary">₹{product.price}</p>
-                          </div>
-                          <button className="mt-6 w-full rounded-xl bg-secondary py-3 text-sm font-bold text-secondary-foreground transition-smooth hover:bg-secondary/90">
-                             Quick Shop
-                          </button>
-                       </div>
-                    </Link>
-                 ))}
-              </div>
-           </div>
-        </section>
       </main>
 
       <footer className="border-t border-border py-12 text-center text-sm text-muted-foreground">
