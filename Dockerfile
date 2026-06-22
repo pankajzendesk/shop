@@ -21,7 +21,15 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
-COPY --from=builder /app/src/generated ./src/generated
+COPY --from=builder /app/src ./src
+COPY --from=builder /app/tsconfig.json ./tsconfig.json
+COPY --from=builder /app/next.config.mjs ./next.config.mjs
+COPY --from=builder /app/tailwind.config.js ./tailwind.config.js
+COPY --from=builder /app/postcss.config.js ./postcss.config.js
+COPY --from=builder /app/eslint.config.mjs ./eslint.config.mjs
+COPY --from=builder /app/*.ts ./
+COPY --from=builder /app/*.js ./
+COPY --from=builder /app/*.mjs ./
 COPY docker-entrypoint.sh ./
 
 EXPOSE 3000
